@@ -3,74 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COMMAND_CENTER // CORE</title>
+    <title>SaaS Portal | Dashboard Aplikasi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background: #0a0a0c; color: #d1d5db; font-family: 'Inter', sans-serif; }
-        .panel { background: rgba(20, 20, 24, 0.7); border: 1px solid #2d2d3a; backdrop-filter: blur(10px); }
-        .glow-text { text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-        .btn-active { border-left: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
-        
-        /* Dark/Light Logic */
-        .light { background: #e5e7eb; color: #1f2937; }
-        .light .panel { background: rgba(255, 255, 255, 0.8); border: 1px solid #d1d5db; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .theme-dark { background-color: #0f172a; color: #e2e8f0; }
+        .theme-light { background-color: #f8fafc; color: #1e293b; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden transition-all duration-500">
+<body class="theme-light transition-colors duration-300">
 
-    <!-- Sidebar -->
-    <aside class="w-64 panel hidden md:flex flex-col p-6">
-        <h1 class="text-xl font-bold mb-10 tracking-widest text-blue-500">SYSTEM_CORE</h1>
-        <nav class="space-y-4">
-            <a href="#" class="block p-3 btn-active">APPLICATIONS</a>
-            <a href="#" class="block p-3 hover:bg-white/5 opacity-50">INFRASTRUCTURE</a>
-            <a href="#" class="block p-3 hover:bg-white/5 opacity-50">ANALYTICS</a>
-        </nav>
-        <div class="mt-auto panel p-4 text-xs opacity-50">STATUS: ACTIVE<br>MEMORY: 48%</div>
-    </aside>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 border-r hidden md:block p-6">
+            <h2 class="font-bold text-2xl mb-8">Katalog App</h2>
+            <nav class="space-y-4">
+                <button class="w-full text-left p-2 rounded hover:bg-green-100 dark:hover:bg-green-900">Semua Aplikasi</button>
+                <button class="w-full text-left p-2 rounded hover:bg-green-100">Akademik</button>
+                <button class="w-full text-left p-2 rounded hover:bg-green-100">Keuangan</button>
+            </nav>
+        </aside>
 
-    <!-- Main View -->
-    <main class="flex-1 flex flex-col p-8 overflow-y-auto">
-        <header class="flex justify-between items-center mb-8">
-            <div>
-                <h2 class="text-3xl font-light text-white">Dashboard <span class="text-blue-500">App Management</span></h2>
-                <p class="text-sm opacity-60">Control your digital infrastructure.</p>
+        <!-- Main Area -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <header class="flex justify-between items-center mb-8">
+                <input type="text" placeholder="Cari aplikasi..." class="border rounded-full px-6 py-2 w-1/3">
+                <button id="modeToggle" class="bg-gray-800 text-white px-4 py-2 rounded-full text-sm">Mode</button>
+            </header>
+
+            <!-- Grid Display -->
+            <div id="appGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                <!-- Card Template (Bayangkan ini akan terisi banyak) -->
+                <div class="card bg-white dark:bg-slate-800 p-4 rounded-2xl border transition-all">
+                    <div class="bg-gradient-to-br from-green-400 to-emerald-600 h-24 rounded-xl mb-4"></div>
+                    <h3 class="font-bold text-sm">Aplikasi Rapor K13</h3>
+                    <p class="text-[10px] text-gray-500 mb-4">Sistem penilaian otomatis</p>
+                    <button class="w-full border border-green-600 text-green-600 py-1 rounded-lg text-xs font-bold hover:bg-green-600 hover:text-white">DETAIL</button>
+                </div>
             </div>
-            <button id="toggleBtn" class="px-4 py-2 bg-blue-600 rounded-md text-white text-sm">TOGGLE MODE</button>
-        </header>
-
-        <!-- Input Section -->
-        <section class="panel p-6 rounded-lg mb-8 flex gap-4">
-            <input id="inName" placeholder="Application Name" class="bg-transparent border border-white/10 p-2 flex-1 rounded">
-            <input id="inUrl" placeholder="URL Path" class="bg-transparent border border-white/10 p-2 flex-1 rounded">
-            <button onclick="add()" class="bg-blue-600 px-6 py-2 rounded text-white font-bold hover:bg-blue-700">EXECUTE</button>
-        </section>
-
-        <!-- Grid -->
-        <div id="grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- App Card -->
-            <div class="panel p-6 rounded-lg border-l-4 border-blue-500">
-                <h3 class="font-bold text-white">Main Core</h3>
-                <p class="text-xs opacity-50 mb-4">Internal Web Service</p>
-                <div class="h-2 w-full bg-black/50 rounded overflow-hidden"><div class="h-full bg-blue-500 w-[70%]"></div></div>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
-        document.getElementById('toggleBtn').onclick = () => document.body.classList.toggle('light');
-        function add() {
-            const name = document.getElementById('inName').value;
-            const url = document.getElementById('inUrl').value;
-            if(!name) return;
-            document.getElementById('grid').innerHTML += `
-                <div class="panel p-6 rounded-lg border-l-4 border-emerald-500">
-                    <h3 class="font-bold text-white">${name}</h3>
-                    <p class="text-xs opacity-50 mb-4">${url}</p>
-                    <div class="h-2 w-full bg-black/50 rounded overflow-hidden"><div class="h-full bg-emerald-500 w-100%"></div></div>
+        // Toggle Theme
+        document.getElementById('modeToggle').onclick = () => {
+            document.body.classList.toggle('theme-light');
+            document.body.classList.toggle('theme-dark');
+        };
+
+        // Simulasi banyak aplikasi (bisa Anda looping dari database)
+        const apps = ["Rapor", "Keuangan", "Absensi", "Jadwal", "Inventory", "Surat", "PPDB"];
+        const grid = document.getElementById('appGrid');
+        
+        apps.forEach(app => {
+            grid.innerHTML += `
+                <div class="card bg-white dark:bg-slate-800 p-4 rounded-2xl border transition-all">
+                    <div class="bg-gradient-to-br from-blue-400 to-indigo-600 h-24 rounded-xl mb-4"></div>
+                    <h3 class="font-bold text-sm">${app}_System</h3>
+                    <p class="text-[10px] text-gray-500 mb-4">Tools efisiensi sekolah</p>
+                    <button class="w-full border border-blue-600 text-blue-600 py-1 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white">DETAIL</button>
                 </div>
             `;
-        }
+        });
     </script>
 </body>
 </html>
