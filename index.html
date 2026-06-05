@@ -3,83 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEURAL_OS // DASHBOARD</title>
+    <title>COMMAND_CENTER // CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-blue: #00f2ff; --bg-dark: #050505; }
-        body { font-family: 'JetBrains Mono', monospace; background: var(--bg-dark); color: #fff; overflow-x: hidden; }
+        body { background: #0a0a0c; color: #d1d5db; font-family: 'Inter', sans-serif; }
+        .panel { background: rgba(20, 20, 24, 0.7); border: 1px solid #2d2d3a; backdrop-filter: blur(10px); }
+        .glow-text { text-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
+        .btn-active { border-left: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.1); }
         
-        /* Glassmorphism & Cyber Glow */
-        .glass-panel { background: rgba(10, 10, 15, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(0, 242, 255, 0.2); }
-        .neon-border { border: 1px solid var(--neon-blue); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
-        .text-neon { color: var(--neon-blue); text-shadow: 0 0 8px var(--neon-blue); }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-blue); }
+        /* Dark/Light Logic */
+        .light { background: #e5e7eb; color: #1f2937; }
+        .light .panel { background: rgba(255, 255, 255, 0.8); border: 1px solid #d1d5db; }
     </style>
 </head>
-<body class="p-4 md:p-8">
+<body class="flex h-screen overflow-hidden transition-all duration-500">
 
-    <!-- Header -->
-    <header class="flex justify-between items-center mb-10 border-b border-cyan-500/30 pb-6">
-        <div>
-            <h1 class="text-3xl font-bold tracking-tighter text-neon">SYSTEM_CORE v.2.0</h1>
-            <p class="text-xs opacity-60 italic">INTERFACE STATUS: <span class="text-green-400">OPERATIONAL</span></p>
-        </div>
-        <button id="themeToggle" class="px-4 py-2 border border-cyan-500 hover:bg-cyan-500 hover:text-black transition">SYSTEM_TOGGLE</button>
-    </header>
+    <!-- Sidebar -->
+    <aside class="w-64 panel hidden md:flex flex-col p-6">
+        <h1 class="text-xl font-bold mb-10 tracking-widest text-blue-500">SYSTEM_CORE</h1>
+        <nav class="space-y-4">
+            <a href="#" class="block p-3 btn-active">APPLICATIONS</a>
+            <a href="#" class="block p-3 hover:bg-white/5 opacity-50">INFRASTRUCTURE</a>
+            <a href="#" class="block p-3 hover:bg-white/5 opacity-50">ANALYTICS</a>
+        </nav>
+        <div class="mt-auto panel p-4 text-xs opacity-50">STATUS: ACTIVE<br>MEMORY: 48%</div>
+    </aside>
 
-    <!-- Main Grid -->
-    <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+    <!-- Main View -->
+    <main class="flex-1 flex flex-col p-8 overflow-y-auto">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-light text-white">Dashboard <span class="text-blue-500">App Management</span></h2>
+                <p class="text-sm opacity-60">Control your digital infrastructure.</p>
+            </div>
+            <button id="toggleBtn" class="px-4 py-2 bg-blue-600 rounded-md text-white text-sm">TOGGLE MODE</button>
+        </header>
+
         <!-- Input Section -->
-        <section class="lg:col-span-1">
-            <div class="glass-panel p-6 rounded-sm neon-border">
-                <h2 class="text-neon mb-4 uppercase">>> Ingest New Node</h2>
-                <input id="title" placeholder="APP_NAME" class="w-full bg-black border border-cyan-900 p-2 mb-4 outline-none focus:border-cyan-500 transition">
-                <input id="url" placeholder="URL_ADDRESS" class="w-full bg-black border border-cyan-900 p-2 mb-4 outline-none focus:border-cyan-500 transition">
-                <button onclick="addLink()" class="w-full bg-cyan-900/30 border border-cyan-500 py-2 hover:bg-cyan-500 hover:text-black transition uppercase">Upload Link</button>
-            </div>
+        <section class="panel p-6 rounded-lg mb-8 flex gap-4">
+            <input id="inName" placeholder="Application Name" class="bg-transparent border border-white/10 p-2 flex-1 rounded">
+            <input id="inUrl" placeholder="URL Path" class="bg-transparent border border-white/10 p-2 flex-1 rounded">
+            <button onclick="add()" class="bg-blue-600 px-6 py-2 rounded text-white font-bold hover:bg-blue-700">EXECUTE</button>
         </section>
 
-        <!-- Display Section -->
-        <section class="lg:col-span-2">
-            <div id="linkGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Data akan muncul di sini -->
+        <!-- Grid -->
+        <div id="grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- App Card -->
+            <div class="panel p-6 rounded-lg border-l-4 border-blue-500">
+                <h3 class="font-bold text-white">Main Core</h3>
+                <p class="text-xs opacity-50 mb-4">Internal Web Service</p>
+                <div class="h-2 w-full bg-black/50 rounded overflow-hidden"><div class="h-full bg-blue-500 w-[70%]"></div></div>
             </div>
-        </section>
+        </div>
     </main>
 
     <script>
-        function addLink() {
-            const title = document.getElementById('title').value;
-            const url = document.getElementById('url').value;
-            if(!title || !url) return;
-
-            const grid = document.getElementById('linkGrid');
-            grid.innerHTML += `
-                <a href="${url}" target="_blank" class="glass-panel p-5 border border-cyan-900 hover:border-cyan-500 hover:translate-y-[-5px] transition-all group">
-                    <h3 class="text-cyan-400 font-bold group-hover:text-white">${title}</h3>
-                    <p class="text-[10px] opacity-50 mt-2 truncate">${url}</p>
-                    <div class="mt-4 w-full h-1 bg-cyan-900/50"><div class="h-full bg-cyan-500 w-1/2"></div></div>
-                </a>
+        document.getElementById('toggleBtn').onclick = () => document.body.classList.toggle('light');
+        function add() {
+            const name = document.getElementById('inName').value;
+            const url = document.getElementById('inUrl').value;
+            if(!name) return;
+            document.getElementById('grid').innerHTML += `
+                <div class="panel p-6 rounded-lg border-l-4 border-emerald-500">
+                    <h3 class="font-bold text-white">${name}</h3>
+                    <p class="text-xs opacity-50 mb-4">${url}</p>
+                    <div class="h-2 w-full bg-black/50 rounded overflow-hidden"><div class="h-full bg-emerald-500 w-100%"></div></div>
+                </div>
             `;
-            // Reset input
-            document.getElementById('title').value = '';
-            document.getElementById('url').value = '';
         }
-
-        // Toggle Theme Logic
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            document.body.classList.toggle('bg-white');
-            document.body.classList.toggle('text-black');
-            document.querySelectorAll('.glass-panel').forEach(el => {
-                el.classList.toggle('bg-white');
-                el.classList.toggle('bg-[rgba(10,10,15,0.8)]');
-            });
-        });
     </script>
 </body>
 </html>
