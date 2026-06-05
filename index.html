@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portal Nilai Santri — MTs Amtsilati</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --green-light: #dcfce7;
+      --green-xlight: #f0fdf4;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --blue: #2563eb;
+      --blue-light: #dbeafe;
+      --slate: #64748b;
+      --slate-light: #f1f5f9;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .logo-wrap {
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .logo-wrap img {
+      width: 28px; height: 28px; object-fit: contain;
+      filter: brightness(0) invert(1);
+    }
+    .logo-wrap-fallback {
+      width: 44px; height: 44px;
+      border-radius: 14px;
+      background: var(--green);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+    .brand p { font-size: 14px; font-weight: 700; color: var(--text); margin: 0; }
+    .brand span { font-size: 11px; color: var(--muted); }
+    .notif-btn {
+      margin-left: auto;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: var(--slate-light);
+      border: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ── SECTION LABEL ── */
+    .sec-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .form-card .sec-label { margin-bottom: 14px; }
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 0 14px;
+      font-size: 14px;
+      font-family: inherit;
+      background: var(--slate-light);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .field input:focus {
+      border-color: var(--green);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+    }
+    .btn-cari {
+      width: 100%;
+      height: 46px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background .15s, transform .1s;
+      margin-top: 4px;
+    }
+    .btn-cari:hover { background: var(--green-dark); }
+    .btn-cari:active { transform: scale(.98); }
+    .btn-cari svg { width: 18px; height: 18px; }
+
+    /* ── LOADING ── */
+    #loading {
+      display: none;
+      text-align: center;
+      padding: 28px;
+    }
+    .spinner-ring {
+      width: 40px; height: 40px;
+      border: 3px solid var(--green-light);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── HASIL ── */
+    #hasil { display: none; }
+    .fade-in { animation: fadeUp .45s ease; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SISWA BAR ── */
+    .siswa-bar {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .avatar {
+      width: 46px; height: 46px;
+      border-radius: 14px;
+      background: var(--green-light);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: var(--green);
+      flex-shrink: 0;
+    }
+    .siswa-info p { font-size: 15px; font-weight: 700; margin: 0; }
+    .siswa-info span { font-size: 12px; color: var(--muted); }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .stat-card {
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+    }
+    .stat-card .lbl { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+    .stat-card .val { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+    .stat-card .sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+    /* ── TREND BANNER ── */
+    .trend-banner {
+      border-radius: 14px;
+      padding: 13px 15px;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 10px;
+      border: 1px solid;
+    }
+    .trend-up   { background: var(--green-xlight); border-color: #bbf7d0; color: var(--green-dark); }
+    .trend-down { background: var(--amber-light);  border-color: #fde68a; color: var(--amber); }
+    .trend-banner svg { flex-shrink: 0; }
+    .trend-banner p   { font-size: 13px; font-weight: 600; margin: 0; }
+    .trend-banner span { font-size: 11px; opacity: .75; }
+
+    /* ── MINI STATS ── */
+    .mini-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .mini-stat {
+      background: var(--card);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .mini-stat .n { font-size: 22px; font-weight: 700; line-height: 1; }
+    .mini-stat .l { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .c-green { color: var(--green); }
+    .c-amber { color: var(--amber); }
+    .c-blue  { color: var(--blue); }
+
+    /* ── CHART CARD ── */
+    .chart-card {
+      background: var(--card);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .chart-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .chart-header span { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .legend { display: flex; gap: 12px; }
+    .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ── MAPEL LIST ── */
+    .mapel-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .mapel-row {
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .mapel-icon {
+      width: 38px; height: 38px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .mapel-icon svg { width: 18px; height: 18px; }
+    .mapel-body { flex: 1; min-width: 0; }
+    .mapel-body p {
+      font-size: 13px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin: 0 0 4px;
+    }
+    .score-row { display: flex; gap: 6px; }
+    .score-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: var(--slate-light);
+    }
+    .badge-status {
+      font-size: 11px; font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .b-naik  { background: var(--green-light);  color: var(--green-dark); }
+    .b-turun { background: var(--amber-light);  color: var(--amber); }
+    .b-tetap { background: var(--blue-light);   color: var(--blue); }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="logo-wrap-fallback" aria-hidden="true">📗</div>
+    <div class="brand">
+      <p>MTs Amtsilati</p>
+      <span>Portal Nilai Santri</span>
+    </div>
+    <button class="notif-btn" aria-label="Notifikasi">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card">
+    <p class="sec-label">Cari data santri</p>
+    <div class="field">
+      <label for="nisn">NISN</label>
+      <input type="text" id="nisn" placeholder="Masukkan NISN santri">
+    </div>
+    <div class="field">
+      <label for="tgl">Tanggal lahir</label>
+      <input type="date" id="tgl">
+    </div>
+    <button class="btn-cari" onclick="cariData()">
+      <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      Lihat nilai
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading">
+    <div class="spinner-ring"></div>
+    <p style="font-size:13px;color:var(--muted)">Mengambil data...</p>
+  </div>
+
+  <!-- HASIL -->
+  <div id="hasil" class="fade-in">
+    <div id="konten"></div>
+  </div>
+
+</div>
+
+<script>
+let chart = null;
+
+function formatTanggal() {
+  const tgl = document.getElementById('tgl').value;
+  const p = tgl.split('-');
+  return p[2] + p[1] + p[0];
+}
+
+function cariData() {
+  const nisn = document.getElementById('nisn').value.trim();
+  if (!nisn) { alert('Masukkan NISN terlebih dahulu'); return; }
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('hasil').style.display  = 'none';
+
+  google.script.run
+    .withSuccessHandler(tampilkan)
+    .withFailureHandler(function(err) {
+      document.getElementById('loading').style.display = 'none';
+      alert(err);
+    })
+    .getNilai(nisn, formatTanggal());
+}
+
+function tampilkan(res) {
+  document.getElementById('loading').style.display = 'none';
+  if (!res.success) { alert(res.message); return; }
+  document.getElementById('hasil').style.display = 'block';
+
+  const total1  = Number(res.jumlah1 || 0);
+  const total2  = Number(res.jumlah2 || 0);
+  const selisih = total2 - total1;
+  const mapel   = Object.keys(res.semester1);
+  let naik = 0, turun = 0, tetap = 0;
+
+  mapel.forEach(m => {
+    const s1 = Number(res.semester1[m]);
+    const s2 = Number(res.semester2[m]);
+    if (s2 > s1) naik++; else if (s2 < s1) turun++; else tetap++;
+  });
+
+  const initials = res.nama.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+  const trendIcon = selisih >= 0
+    ? `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`
+    : `<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>`;
+
+  let html = `
+  <div class="siswa-bar">
+    <div class="avatar">${initials}</div>
+    <div class="siswa-info">
+      <p>${res.nama}</p>
+      <span>Perbandingan Semester 1 &amp; 2</span>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="lbl">Semester 1</div>
+      <div class="val">${total1}</div>
+      <div class="sub">Total nilai</div>
+    </div>
+    <div class="stat-card">
+      <div class="lbl">Semester 2</div>
+      <div class="val">${total2}</div>
+      <div class="sub">Total nilai</div>
+    </div>
+  </div>
+
+  <div class="trend-banner ${selisih >= 0 ? 'trend-up' : 'trend-down'}">
+    ${trendIcon}
+    <div>
+      <p>${selisih >= 0 ? 'Nilai meningkat' : 'Nilai menurun'} ${Math.abs(selisih)} poin</p>
+      <span>${selisih >= 0 ? 'Perkembangan bagus — pertahankan!' : 'Butuh perhatian lebih di semester depan'}</span>
+    </div>
+  </div>
+
+  <div class="mini-stats">
+    <div class="mini-stat"><div class="n c-green">${naik}</div><div class="l">Naik</div></div>
+    <div class="mini-stat"><div class="n c-amber">${turun}</div><div class="l">Turun</div></div>
+    <div class="mini-stat"><div class="n c-blue">${tetap}</div><div class="l">Tetap</div></div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-header">
+      <span>Grafik nilai per mapel</span>
+      <div class="legend">
+        <div class="leg-item"><span class="dot" style="background:#94a3b8"></span>SMT 1</div>
+        <div class="leg-item"><span class="dot" style="background:#16a34a"></span>SMT 2</div>
+      </div>
+    </div>
+    <canvas id="grafik" style="max-height:220px"></canvas>
+  </div>
+
+  <p class="sec-label">Detail per mata pelajaran</p>
+  <div class="mapel-list">`;
+
+  mapel.forEach(m => {
+    const s1 = Number(res.semester1[m]);
+    const s2 = Number(res.semester2[m]);
+    let bCls, iconBg, iconColor, iconSvg, statusText;
+
+    if (s2 > s1) {
+      bCls = 'b-naik'; iconBg = '#dcfce7'; iconColor = '#16a34a';
+      statusText = '+' + (s2 - s1);
+      iconSvg = `<svg fill="none" stroke="${iconColor}" stroke-width="2.5" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>`;
+    } else if (s2 < s1) {
+      bCls = 'b-turun'; iconBg = '#fef3c7'; iconColor = '#d97706';
+      statusText = '' + (s2 - s1);
+      iconSvg = `<svg fill="none" stroke="${iconColor}" stroke-width="2.5" viewBox="0 0 24 24"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg>`;
+    } else {
+      bCls = 'b-tetap'; iconBg = '#dbeafe'; iconColor = '#2563eb';
+      statusText = 'Tetap';
+      iconSvg = `<svg fill="none" stroke="${iconColor}" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
+    }
+
+    html += `
+    <div class="mapel-row">
+      <div class="mapel-icon" style="background:${iconBg}">${iconSvg}</div>
+      <div class="mapel-body">
+        <p>${m}</p>
+        <div class="score-row">
+          <span class="score-pill">SMT 1: ${s1}</span>
+          <span class="score-pill">SMT 2: ${s2}</span>
+        </div>
+      </div>
+      <span class="badge-status ${bCls}">${statusText}</span>
+    </div>`;
+  });
+
+  html += `</div>`;
+  document.getElementById('konten').innerHTML = html;
+  buatGrafik(res);
+}
+
+function buatGrafik(res) {
+  const labels = Object.keys(res.semester1);
+  const data1  = labels.map(m => Number(res.semester1[m]));
+  const data2  = labels.map(m => Number(res.semester2[m]));
+  const short  = labels.map(l => l.length > 9 ? l.slice(0, 9) + '…' : l);
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(document.getElementById('grafik'), {
+    type: 'bar',
+    data: {
+      labels: short,
+      datasets: [
+        { label: 'SMT 1', data: data1, backgroundColor: '#94a3b8', borderRadius: 5, barPercentage: .65 },
+        { label: 'SMT 2', data: data2, backgroundColor: '#16a34a', borderRadius: 5, barPercentage: .65 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10, family: 'Plus Jakarta Sans' } } },
+        y: { grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { size: 10 } }, min: 50 }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
