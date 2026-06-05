@@ -3,42 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DASHBOARD | Pro Apps</title>
-    <link rel="icon" type="image/png" href="https://i.ibb.co.com/1fHCTtJ5/logo.png">
+    <title>DASHBOARD | Elite Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Desain Glassmorphism Premium */
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
-        .card-hover:hover { transform: scale(1.02); transition: 0.3s; }
-        
-        /* Custom scrollbar untuk Sidebar */
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); }
+        .app-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .app-card:hover { transform: translateY(-12px) scale(1.02); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15); }
     </style>
 </head>
-<body class="bg-slate-100 font-sans text-slate-800">
-
-    <div class="md:hidden p-4 bg-white shadow-sm flex items-center justify-between">
-        <h1 class="font-bold">KATALOG APP</h1>
-        <button onclick="document.getElementById('sidebar').classList.toggle('hidden')">☰</button>
-    </div>
+<body class="bg-[#F8FAFC]">
 
     <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="w-64 bg-white border-r p-6 hidden md:block z-20">
-            <div class="flex items-center gap-3 mb-10">
-                <img src="https://i.ibb.co.com/1fHCTtJ5/logo.png" class="w-8 h-8">
-                <h1 class="font-bold text-lg tracking-wider">PLATFORM</h1>
+        
+        <aside class="w-72 bg-white border-r border-slate-200 p-8 hidden md:flex flex-col">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center">
+                    <img src="https://i.ibb.co.com/1fHCTtJ5/logo.png" class="w-6 h-6">
+                </div>
+                <h1 class="font-extrabold text-xl tracking-tighter text-slate-900">ELITE.APP</h1>
             </div>
-            <nav id="categoryNav" class="space-y-2">
-                <button onclick="filterApps('Semua')" class="w-full text-left p-3 bg-blue-600 text-white font-semibold rounded-xl">Semua Aplikasi</button>
-            </nav>
+            
+            <nav id="categoryNav" class="space-y-3 flex-1">
+                </nav>
+
+            <div class="bg-indigo-50 p-6 rounded-3xl text-center">
+                <p class="text-xs font-bold text-indigo-600 mb-2">SYSTEM STATUS</p>
+                <div class="w-full bg-indigo-200 rounded-full h-2"><div class="bg-indigo-600 h-2 rounded-full w-3/4"></div></div>
+            </div>
         </aside>
 
-        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
-            <h2 id="currentCategory" class="text-2xl font-bold mb-6 text-slate-700">Semua Aplikasi</h2>
-            
-            <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <p class="col-span-full text-center py-20 text-slate-400">Menghubungkan ke database...</p>
+        <main class="flex-1 overflow-y-auto p-8 md:p-12">
+            <header class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 id="currentCategory" class="text-4xl font-extrabold text-slate-900 tracking-tighter">Semua Aplikasi</h2>
+                    <p class="text-slate-500 mt-2">Kelola dan navigasikan infrastruktur sistem Anda.</p>
+                </div>
+            </header>
+
+            <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div class="col-span-full h-64 flex items-center justify-center">
+                    <div class="animate-spin w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full"></div>
+                </div>
             </div>
         </main>
     </div>
@@ -58,13 +65,17 @@
         function renderApps(apps) {
             const grid = document.getElementById('appGrid');
             grid.innerHTML = apps.map(app => `
-                <div class="card-hover bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                <div class="app-card bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col justify-between group">
                     <div>
-                        <div class="h-20 w-full bg-slate-100 rounded-2xl mb-4 flex items-center justify-center font-bold text-slate-400">APP</div>
-                        <h3 class="font-bold text-lg mb-1">${app.nama}</h3>
-                        <p class="text-sm text-slate-500 mb-4 line-clamp-2">${app.deskripsi || 'Sistem Terintegrasi'}</p>
+                        <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6 text-indigo-600 text-xl font-bold">
+                            ${app.nama.charAt(0)}
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">${app.nama}</h3>
+                        <p class="text-sm text-slate-500 leading-relaxed">${app.deskripsi || 'Sistem operasional terintegrasi.'}</p>
                     </div>
-                    <a href="${app.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition">BUKA APLIKASI</a>
+                    <a href="${app.link}" target="_blank" class="mt-8 flex items-center justify-center gap-2 bg-slate-900 hover:bg-indigo-600 text-white py-3 rounded-2xl font-bold transition-all w-full">
+                        BUKA APLIKASI ↗
+                    </a>
                 </div>
             `).join('');
         }
@@ -73,7 +84,9 @@
             const categories = ['Semua', ...new Set(data.map(app => app.kategori).filter(Boolean))];
             const nav = document.getElementById('categoryNav');
             nav.innerHTML = categories.map(cat => `
-                <button onclick="filterApps('${cat}')" class="w-full text-left p-3 hover:bg-slate-100 rounded-xl transition font-medium">${cat}</button>
+                <button onclick="filterApps('${cat}')" class="w-full text-left px-5 py-3 rounded-xl font-semibold text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition">
+                    ${cat}
+                </button>
             `).join('');
         }
 
@@ -81,8 +94,6 @@
             document.getElementById('currentCategory').innerText = cat + " Aplikasi";
             const filtered = cat === 'Semua' ? allApps : allApps.filter(a => a.kategori === cat);
             renderApps(filtered);
-            // Auto hide sidebar di mobile setelah klik
-            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
         }
     </script>
 </body>
