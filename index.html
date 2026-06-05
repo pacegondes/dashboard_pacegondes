@@ -3,29 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DASHBOARD | My Apps</title>
+    <title>DASHBOARD | Pro Apps</title>
     <link rel="icon" type="image/png" href="https://i.ibb.co.com/1fHCTtJ5/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        /* Desain Glassmorphism Premium */
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .card-hover:hover { transform: scale(1.02); transition: 0.3s; }
+        
+        /* Custom scrollbar untuk Sidebar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body class="bg-slate-100 font-sans text-slate-800">
 
-    <div class="flex h-screen">
-        <aside class="w-64 bg-white border-r p-6 hidden md:block">
+    <div class="md:hidden p-4 bg-white shadow-sm flex items-center justify-between">
+        <h1 class="font-bold">KATALOG APP</h1>
+        <button onclick="document.getElementById('sidebar').classList.toggle('hidden')">☰</button>
+    </div>
+
+    <div class="flex h-screen overflow-hidden">
+        <aside id="sidebar" class="w-64 bg-white border-r p-6 hidden md:block z-20">
             <div class="flex items-center gap-3 mb-10">
                 <img src="https://i.ibb.co.com/1fHCTtJ5/logo.png" class="w-8 h-8">
-                <h1 class="font-bold text-xl">KATALOG APP</h1>
+                <h1 class="font-bold text-lg tracking-wider">PLATFORM</h1>
             </div>
             <nav id="categoryNav" class="space-y-2">
-                <button onclick="filterApps('Semua')" class="w-full text-left p-2 bg-blue-50 text-blue-700 font-bold rounded-lg">Semua Aplikasi</button>
+                <button onclick="filterApps('Semua')" class="w-full text-left p-3 bg-blue-600 text-white font-semibold rounded-xl">Semua Aplikasi</button>
             </nav>
         </aside>
 
-        <main class="flex-1 p-8 overflow-y-auto">
-            <h2 id="currentCategory" class="text-2xl font-bold mb-6">Semua Aplikasi</h2>
-            <div id="appGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"></div>
+        <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+            <h2 id="currentCategory" class="text-2xl font-bold mb-6 text-slate-700">Semua Aplikasi</h2>
+            
+            <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <p class="col-span-full text-center py-20 text-slate-400">Menghubungkan ke database...</p>
+            </div>
         </main>
     </div>
 
@@ -41,33 +55,34 @@
                 renderCategories(data);
             });
 
-        // Tampilkan Aplikasi
         function renderApps(apps) {
             const grid = document.getElementById('appGrid');
             grid.innerHTML = apps.map(app => `
-                <div class="card bg-white p-4 rounded-2xl border border-gray-100 shadow-sm transition-all">
-                    <div class="h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl mb-4"></div>
-                    <h3 class="font-bold text-sm truncate">${app.nama}</h3>
-                    <p class="text-xs text-gray-500 mb-4 h-8">${app.deskripsi || 'Sistem Terintegrasi'}</p>
-                    <a href="${app.link}" target="_blank" class="block text-center bg-blue-600 text-white py-2 rounded-lg text-xs font-bold hover:bg-blue-700 transition">BUKA</a>
+                <div class="card-hover bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex flex-col justify-between">
+                    <div>
+                        <div class="h-20 w-full bg-slate-100 rounded-2xl mb-4 flex items-center justify-center font-bold text-slate-400">APP</div>
+                        <h3 class="font-bold text-lg mb-1">${app.nama}</h3>
+                        <p class="text-sm text-slate-500 mb-4 line-clamp-2">${app.deskripsi || 'Sistem Terintegrasi'}</p>
+                    </div>
+                    <a href="${app.link}" target="_blank" class="block w-full text-center bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition">BUKA APLIKASI</a>
                 </div>
             `).join('');
         }
 
-        // Generate Sidebar Kategori secara otomatis dari data Sheet
         function renderCategories(data) {
             const categories = ['Semua', ...new Set(data.map(app => app.kategori).filter(Boolean))];
             const nav = document.getElementById('categoryNav');
             nav.innerHTML = categories.map(cat => `
-                <button onclick="filterApps('${cat}')" class="w-full text-left p-2 hover:bg-gray-100 rounded-lg transition">${cat}</button>
+                <button onclick="filterApps('${cat}')" class="w-full text-left p-3 hover:bg-slate-100 rounded-xl transition font-medium">${cat}</button>
             `).join('');
         }
 
-        // Filter Data
         function filterApps(cat) {
             document.getElementById('currentCategory').innerText = cat + " Aplikasi";
             const filtered = cat === 'Semua' ? allApps : allApps.filter(a => a.kategori === cat);
             renderApps(filtered);
+            // Auto hide sidebar di mobile setelah klik
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
         }
     </script>
 </body>
