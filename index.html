@@ -10,11 +10,24 @@
         body { font-family: 'Inter', sans-serif; }
         .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .app-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        
+        /* Mobile Scroll Optimization */
+        @media (max-width: 768px) {
+            #appGrid {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 20px;
+                gap: 1rem;
+            }
+            .app-card { min-width: 260px; }
+        }
     </style>
 </head>
 <body class="bg-[#F1F5F9]">
 
     <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
         <aside class="w-72 bg-white/50 backdrop-blur-xl border-r border-slate-200 p-8 hidden md:flex flex-col">
             <div class="flex items-center gap-3 mb-12">
                 <div class="w-10 h-10 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
@@ -25,13 +38,17 @@
             <nav id="categoryNav" class="space-y-2 flex-1"></nav>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-10">
+        <!-- Main -->
+        <main class="flex-1 overflow-y-auto p-6 md:p-10">
             <div class="max-w-7xl mx-auto">
                 <header class="mb-10">
-                    <h2 id="currentCategory" class="text-4xl font-extrabold text-slate-900 tracking-tight">Semua Aplikasi</h2>
+                    <h2 id="currentCategory" class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Semua Aplikasi</h2>
                 </header>
 
-                <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                <!-- Grid 4 Kolom di Desktop, Scrollable di Mobile -->
+                <div id="appGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Data muncul di sini -->
+                </div>
             </div>
         </main>
     </div>
@@ -40,7 +57,6 @@
         const URL = "https://script.google.com/macros/s/AKfycbw4s0VNMW8DSiJvHLi0TpxMQuZx886CXSwpxBb4QvBWenRe8krqayg7SrFlEHJxb6YGgQ/exec";
         let allApps = [];
 
-        // Warna gradasi acak untuk ikon
         const colors = ['from-blue-500 to-cyan-400', 'from-purple-500 to-pink-500', 'from-orange-400 to-red-500', 'from-emerald-500 to-teal-400', 'from-amber-400 to-orange-500'];
 
         fetch(URL)
@@ -56,7 +72,7 @@
             grid.innerHTML = apps.map((app, index) => {
                 const color = colors[index % colors.length];
                 return `
-                    <div class="app-card p-6 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 group">
+                    <div class="app-card p-6 rounded-3xl shadow-sm hover:shadow-2xl transition-all duration-300 group flex-shrink-0">
                         <div class="w-16 h-16 bg-gradient-to-tr ${color} rounded-2xl flex items-center justify-center mb-6 shadow-lg transform group-hover:rotate-6 transition-transform">
                             <span class="text-white text-2xl font-bold">${app.nama.charAt(0).toUpperCase()}</span>
                         </div>
