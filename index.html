@@ -15,8 +15,8 @@
 </head>
 <body class="bg-[#F1F5F9]">
 
-    <div class="flex h-screen overflow-hidden">
-        <aside id="sidebar" class="w-72 bg-white/50 backdrop-blur-xl border-r border-slate-200 p-8 hidden md:flex flex-col z-30 md:relative absolute inset-y-0 left-0 md:translate-x-0 -translate-x-full transition-transform duration-300">
+    <div class="flex h-screen overflow-hidden relative">
+        <aside id="sidebar" class="w-72 bg-white/50 backdrop-blur-xl border-r border-slate-200 p-8 z-30 md:relative absolute inset-y-0 left-0 -translate-x-full transition-transform duration-300 hidden md:flex flex-col">
             <div class="flex items-center justify-between gap-3 mb-12">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
@@ -31,7 +31,6 @@
 
         <main class="flex-1 overflow-y-auto p-6 md:p-10">
             <div class="max-w-7xl mx-auto">
-                
                 <header class="mb-8 md:mb-10 flex items-center justify-between">
                     <div>
                         <h2 id="currentCategory" class="text-2xl md:text-4xl font-extrabold text-slate-900 tracking-tight">Semua Aplikasi</h2>
@@ -105,9 +104,15 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             
-            sidebar.classList.toggle('-translate-x-full');
-            sidebar.classList.toggle('hidden');
-            overlay.classList.toggle('hidden');
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                setTimeout(() => sidebar.classList.remove('-translate-x-full'), 10);
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                setTimeout(() => sidebar.classList.add('hidden'), 300);
+            }
         }
     </script>
 </body>
