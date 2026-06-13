@@ -25,7 +25,7 @@
 <body class="bg-[#F8FAFC] text-slate-800">
 
     <div class="flex h-screen overflow-hidden relative">
-        <aside id="sidebar" class="w-72 bg-white/70 backdrop-blur-2xl border-r border-slate-100 p-8 z-30 md:relative absolute inset-y-0 left-0 -translate-x-full transition-all duration-300 hidden md:flex flex-col shadow-xl md:shadow-none">
+        <aside id="sidebar" class="w-72 bg-white/70 backdrop-blur-2xl border-r border-slate-100 p-8 z-30 md:relative absolute inset-y-0 left-0 -translate-x-full md:translate-x-0 transition-all duration-300 hidden md:flex flex-col shadow-xl md:shadow-none">
             <div class="flex items-center justify-between gap-3 mb-10">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 gradient-bg rounded-2xl flex items-center justify-center shadow-md shadow-indigo-500/30">
@@ -41,8 +41,8 @@
             </div>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-6 md:p-10">
-            <div class="max-w-7xl mx-auto">
+        <main class="flex-1 overflow-y-auto p-6 md:p-10 flex justify-center">
+            <div class="w-full max-w-5xl">
                 
                 <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
@@ -125,7 +125,6 @@
                 `;
             }).join('');
             
-            // Injeksi style animasi fade-in sederhana langsung
             if (!document.getElementById('customFadeIn')) {
                 const style = document.createElement('style');
                 style.id = 'customFadeIn';
@@ -148,10 +147,8 @@
             currentActiveCategory = cat;
             document.getElementById('currentCategory').innerText = cat + " Aplikasi";
             
-            // Reset pencarian saat ganti kategori
             document.getElementById('searchBar').value = '';
             
-            // Styling tombol kategori aktif
             document.querySelectorAll('#categoryNav .category-btn').forEach(btn => {
                 if (btn.innerText.trim() === cat) {
                     btn.className = "category-btn w-full text-left px-5 py-3.5 rounded-2xl font-bold text-sm transition-all duration-200 bg-slate-900 text-white shadow-md shadow-slate-900/10";
@@ -169,10 +166,8 @@
         function processSearch() {
             const query = document.getElementById('searchBar').value.toLowerCase();
             
-            // Filter berdasarkan kategori yang sedang dipilih terlebih dahulu
             let baseSource = currentActiveCategory === 'Semua' ? allApps : allApps.filter(a => a.kategori === currentActiveCategory);
             
-            // Lakukan pencarian teks
             const filtered = baseSource.filter(app => 
                 app.nama.toLowerCase().includes(query) || 
                 (app.deskripsi && app.deskripsi.toLowerCase().includes(query))
@@ -181,12 +176,11 @@
             renderApps(filtered);
         }
 
-        // Fungsi Toggle Sidebar untuk HP / Tablet
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             
-            if (sidebar.classList.contains('hidden')) {
+            if (sidebar.classList.contains('hidden') || sidebar.classList.contains('-translate-x-full')) {
                 sidebar.classList.remove('hidden');
                 setTimeout(() => sidebar.classList.remove('-translate-x-full'), 10);
                 overlay.classList.remove('hidden');
